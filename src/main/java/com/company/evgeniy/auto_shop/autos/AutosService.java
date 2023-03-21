@@ -4,15 +4,18 @@ import com.company.evgeniy.auto_shop.autos.dto.CreateAutoDto;
 import com.company.evgeniy.auto_shop.autos.dto.UpdateAutoDto;
 import com.company.evgeniy.auto_shop.autos.entities.AutoEntity;
 import com.company.evgeniy.auto_shop.utils.MappingUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 
 @Service
 public class AutosService {
-    @Autowired
+
     private AutosRepository autosRepository;
+
+    public AutosService(AutosRepository autosRepository) {
+        this.autosRepository = autosRepository;
+    }
 
     private final MappingUtil mappingUtil = new MappingUtil();
 

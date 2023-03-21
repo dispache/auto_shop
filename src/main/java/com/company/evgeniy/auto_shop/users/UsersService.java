@@ -5,7 +5,6 @@ import com.company.evgeniy.auto_shop.users.dto.CreateUserDto;
 import com.company.evgeniy.auto_shop.users.dto.UpdateUserDto;
 import com.company.evgeniy.auto_shop.users.entities.UserEntity;
 import com.company.evgeniy.auto_shop.utils.MappingUtil;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,14 +13,13 @@ import java.text.ParseException;
 @Service
 public class UsersService {
 
-    @Autowired
     private final UsersRepository usersRepository;
 
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     private final MappingUtil mappingUtil = new MappingUtil();
 
-    UsersService(UsersRepository usersRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UsersService(UsersRepository usersRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.usersRepository = usersRepository;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }

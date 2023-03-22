@@ -1,5 +1,6 @@
 package com.company.evgeniy.auto_shop.config;
 
+import com.company.evgeniy.auto_shop.auth.MyOAuth2UserService;
 import com.company.evgeniy.auto_shop.security.filters.AdminRoleAuthFilter;
 import com.company.evgeniy.auto_shop.users.UsersService;
 import com.company.evgeniy.auto_shop.users.entities.UserEntity;
@@ -25,18 +26,40 @@ import java.util.Collections;
 @EnableWebSecurity
 public class WebSecurityConfig {
 
-    @Autowired
-    UsersService usersService;
+    private UsersService usersService;
+    private MyOAuth2UserService myOAuth2UserService;
 
     @Value("${jwt.secret_key}")
-    String jwtSecretKey;
+    private String jwtSecretKey;
+
+    @Autowired
+    private void setUsersService(UsersService usersService) {
+        this.usersService = usersService;
+    }
+
+    @Autowired
+    private void setMyOAuth2UserService(MyOAuth2UserService myOAuth2UserService) {
+        this.myOAuth2UserService = myOAuth2UserService;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(
             HttpSecurity httpSecurity
     ) throws Exception {
         httpSecurity.csrf(csrf -> csrf.disable()).authorizeHttpRequests(auth -> {
-            auth.anyRequest().permitAll();
+            try {
+                auth
+                        .anyRequest().permitAll()
+                        .and()
+                        .oauth2Login()
+                        .userInfoEndpoint().userService(this.myOAuth2UserService)
+                        .and()
+                        .redirectionEndpoint().baseUri("/auth/google/callback")
+                        .and()
+                        .defaultSuccessUrl("/auth/google/callback/user");
+            } catch (Exception exception) {
+                System.out.println(exception.getMessage());
+            }
         });
         return httpSecurity.build();
     }

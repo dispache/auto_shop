@@ -1,6 +1,7 @@
 package com.company.evgeniy.auto_shop.config;
 
 import com.company.evgeniy.auto_shop.auth.MyOAuth2UserService;
+import com.company.evgeniy.auto_shop.auth.TokenService;
 import com.company.evgeniy.auto_shop.security.filters.AdminRoleAuthFilter;
 import com.company.evgeniy.auto_shop.users.UsersService;
 import com.company.evgeniy.auto_shop.users.entities.UserEntity;
@@ -28,9 +29,14 @@ public class WebSecurityConfig {
 
     private UsersService usersService;
     private MyOAuth2UserService myOAuth2UserService;
+    private final TokenService tokenService;
 
     @Value("${jwt.secret_key}")
     private String jwtSecretKey;
+
+    public WebSecurityConfig(TokenService tokenService) {
+        this.tokenService = tokenService;
+    }
 
     @Autowired
     private void setUsersService(UsersService usersService) {
@@ -84,7 +90,7 @@ public class WebSecurityConfig {
 
     @Bean
     public FilterRegistrationBean<AdminRoleAuthFilter> filterRegistrationBean() {
-        AdminRoleAuthFilter adminRoleAuthFilter = new AdminRoleAuthFilter();
+        AdminRoleAuthFilter adminRoleAuthFilter = new AdminRoleAuthFilter(this.tokenService);
         adminRoleAuthFilter.setJwtSecretKey(jwtSecretKey);
         FilterRegistrationBean<AdminRoleAuthFilter> filter = new FilterRegistrationBean<>(adminRoleAuthFilter);
         filter.addUrlPatterns("/api/autos/create-auto", "/api/autos/remove-auto/*");

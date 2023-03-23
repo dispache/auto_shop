@@ -1,7 +1,7 @@
 package com.company.evgeniy.auto_shop.security.filters;
 
+import com.company.evgeniy.auto_shop.auth.TokenService;
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
 import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -11,7 +11,12 @@ import java.io.IOException;
 
 public class AdminRoleAuthFilter implements Filter {
 
-    String jwtSecretKey;
+    private String jwtSecretKey;
+    private final TokenService tokenService;
+
+    public AdminRoleAuthFilter(TokenService tokenService) {
+        this.tokenService = tokenService;
+    }
 
     public void setJwtSecretKey(String key) {
         this.jwtSecretKey = key;
@@ -27,7 +32,7 @@ public class AdminRoleAuthFilter implements Filter {
             response.sendError(HttpStatus.FORBIDDEN.value(), "Authorization token must be provided");
             return;
         }
-        Claims claims = Jwts.parser().setSigningKey(jwtSecretKey).parseClaimsJws(accessToken).getBody();
+        Claims claims = this.tokenService.getClaimsFromAccessToken(accessToken);
         if ( claims.get("role").equals("admin") ) {
             chain.doFilter(servletRequest, servletResponse);
         } else {

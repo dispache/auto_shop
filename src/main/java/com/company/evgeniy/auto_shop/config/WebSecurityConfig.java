@@ -87,7 +87,7 @@ public class WebSecurityConfig {
         AdminRoleAuthFilter adminRoleAuthFilter = new AdminRoleAuthFilter();
         adminRoleAuthFilter.setJwtSecretKey(jwtSecretKey);
         FilterRegistrationBean<AdminRoleAuthFilter> filter = new FilterRegistrationBean<>(adminRoleAuthFilter);
-        filter.addUrlPatterns("/api/autos/create-auto", "/api/autos/remove-auto");
+        filter.addUrlPatterns("/api/autos/create-auto", "/api/autos/remove-auto/*");
         return filter;
     }
 

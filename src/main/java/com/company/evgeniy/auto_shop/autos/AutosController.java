@@ -22,7 +22,11 @@ public class AutosController {
     }
 
     @GetMapping()
-    public Iterable<AutoEntity> getAllAutos() {
+    public Iterable<AutoEntity> getAllAutos(@RequestParam(value = "sort_by", required = false) String sortBy,
+                                            @RequestParam(value = "order_by", required = false) String orderBy) {
+        if ( sortBy != null ) {
+            return this.autosService.getAutosBySort(sortBy, orderBy);
+        }
         return this.autosService.getAllAutos();
     }
 

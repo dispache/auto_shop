@@ -7,6 +7,11 @@ import com.company.evgeniy.auto_shop.utils.MappingUtil;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
+import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 @Service
 public class AutosService {
@@ -21,6 +26,29 @@ public class AutosService {
 
     public Iterable<AutoEntity> getAllAutos() {
         return this.autosRepository.findAll();
+    }
+
+    public Iterable<AutoEntity> getAutosBySort(String sortBy, String orderBy) {
+        if ( orderBy == null ) {
+            orderBy = "null";
+        }
+        Iterable<AutoEntity> autos = this.getAllAutos();
+        Supplier<Stream<AutoEntity>> supplier = () -> StreamSupport.stream(autos.spliterator(), false);
+        Stream<AutoEntity> result = null;
+        if ( sortBy.equals("price") ) {
+            if (orderBy.equals("desc")) {
+                result = supplier.get().sorted((auto1, auto2) -> auto2.getPrice() - auto1.getPrice());
+            } else if (orderBy.equals("asc")) {
+                result = supplier.get().sorted((auto1, auto2) -> auto1.getPrice() - auto2.getPrice());
+            }
+        } else if ( sortBy.equals("productionYear") ) {
+            if ( orderBy.equals("desc") ) {
+               result = supplier.get().sorted((auto1, auto2) -> auto2.getProductionYear() - auto1.getProductionYear());
+            } else if ( orderBy.equals("asc") ) {
+               result = supplier.get().sorted((auto1, auto2) -> auto1.getProductionYear() - auto2.getProductionYear());
+            }
+        }
+        return result == null ? autos : result.collect(Collectors.toList());
     }
 
     public AutoEntity getAutoById(int autoId) {

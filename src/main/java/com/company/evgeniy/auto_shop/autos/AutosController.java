@@ -35,6 +35,11 @@ public class AutosController {
         return this.autosService.getAutoById(autoId);
     }
 
+    @GetMapping("/brand/{brand}")
+    public Iterable<AutoEntity> getAutosByBrand(@PathVariable("brand") String brand) {
+        return this.autosService.getAutosByBrand(brand);
+    }
+
     @PostMapping("/create-auto")
     public AutoEntity createAuto(
             @RequestAttribute("dto") @Valid CreateAutoDto createAutoDto,

@@ -7,7 +7,6 @@ import com.company.evgeniy.auto_shop.utils.MappingUtil;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
-import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -53,6 +52,14 @@ public class AutosService {
 
     public AutoEntity getAutoById(int autoId) {
         return this.autosRepository.findById(autoId).get();
+    }
+
+    public Iterable<AutoEntity> getAutosByBrand(String brand) {
+        Iterable<AutoEntity> autos = this.getAllAutos();
+        return StreamSupport
+                .stream(autos.spliterator(), false)
+                .filter(auto -> auto.getBrand().equalsIgnoreCase(brand))
+                .collect(Collectors.toList());
     }
 
     public AutoEntity createAuto(CreateAutoDto createAutoDto) throws ParseException {

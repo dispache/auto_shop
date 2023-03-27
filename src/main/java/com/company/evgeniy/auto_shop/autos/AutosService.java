@@ -7,6 +7,8 @@ import com.company.evgeniy.auto_shop.utils.MappingUtil;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -27,12 +29,11 @@ public class AutosService {
         return this.autosRepository.findAll();
     }
 
-    public Iterable<AutoEntity> getAutosBySort(String sortBy, String orderBy) {
+    public Iterable<AutoEntity> getAutosBySort(Iterable<AutoEntity> response, String sortBy, String orderBy) {
         if ( orderBy == null ) {
             orderBy = "null";
         }
-        Iterable<AutoEntity> autos = this.getAllAutos();
-        Supplier<Stream<AutoEntity>> supplier = () -> StreamSupport.stream(autos.spliterator(), false);
+        Supplier<Stream<AutoEntity>> supplier = () -> StreamSupport.stream(response.spliterator(), false);
         Stream<AutoEntity> result = null;
         if ( sortBy.equals("price") ) {
             if (orderBy.equals("desc")) {
@@ -47,11 +48,21 @@ public class AutosService {
                result = supplier.get().sorted((auto1, auto2) -> auto1.getProductionYear() - auto2.getProductionYear());
             }
         }
-        return result == null ? autos : result.collect(Collectors.toList());
+        return result == null ? response : result.collect(Collectors.toList());
     }
 
     public AutoEntity getAutoById(int autoId) {
         return this.autosRepository.findById(autoId).get();
+    }
+
+    public Iterable<AutoEntity> filterAutosByBrands(String brands) {
+        String[] autoBrandsArray = brands.split(",");
+        ArrayList<AutoEntity> result = new ArrayList<>();
+        for ( String brand : autoBrandsArray ) {
+            Iterable<AutoEntity> autosByBrand = this.getAutosByBrand(brand);
+            result.addAll((Collection<? extends AutoEntity>) autosByBrand);
+        }
+        return result;
     }
 
     public Iterable<AutoEntity> getAutosByBrand(String brand) {
